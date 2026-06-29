@@ -52,16 +52,22 @@ platform :android do
 
     build_android
 
-    apk_path = "app/build/outputs/apk/release/app-release.apk"
+    apk_path = Actions.lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
 
-    unless File.exist?(apk_path)
-      apk_path = "app/build/outputs/apk/release/app-release-unsigned.apk"
+    if apk_path.nil? || !File.exist?(apk_path)
+      apk_paths = Actions.lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS] || []
+      apk_path = apk_paths.find { |path| File.exist?(path) }
     end
 
-    UI.user_error!("Release APK not found") unless File.exist?(apk_path)
+    UI.message("APK path from Gradle: #{apk_path}")
+    UI.user_error!("Release APK not found") if apk_path.nil? || !File.exist?(apk_path)
+
+    firebase_app_id = ENV["FIREBASE_NATIVE_ANDROID_APP_ID"] || ENV["FIREBASE_ANDROID_APP_ID"]
+    UI.user_error!("Firebase Android App ID is missing") if firebase_app_id.to_s.strip.empty?
+    UI.user_error!("Firebase token is missing") if ENV["FIREBASE_TOKEN"].to_s.strip.empty?
 
     firebase_app_distribution(
-      app: ENV["FIREBASE_ANDROID_APP_ID"],
+      app: firebase_app_id,
       firebase_cli_token: ENV["FIREBASE_TOKEN"],
       android_artifact_type: "APK",
       android_artifact_path: apk_path,
