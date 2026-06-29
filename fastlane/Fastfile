@@ -1,13 +1,30 @@
 default_platform(:android)
 
+def read_release_notes
+  release_notes_path = ENV["RELEASE_NOTES_PATH"].to_s.strip
+  default_notes = "SmartServe Native Android Jenkins build ##{ENV['BUILD_NUMBER'] || 'local'}"
+
+  return default_notes if release_notes_path.empty?
+  return File.read(release_notes_path) if File.exist?(release_notes_path)
+
+  default_notes
+end
+
 platform :android do
-  desc "Build native Android app: DEBUG APK, RELEASE APK, or RELEASE AAB"
+  desc "Build native Android app"
   lane :build_android do
     build_type = (ENV["BUILD_TYPE"] || "DEBUG").upcase
     artifact_type = (ENV["ANDROID_ARTIFACT"] || "APK").upcase
 
+    version_name = ENV["VERSION_NAME"] || "1.0.0"
+    version_code = ENV["VERSION_CODE"] || ENV["BUILD_NUMBER"] || "1"
+
+    UI.user_error!("VERSION_CODE must be numeric") unless version_code.match?(/^\d+$/)
+
     UI.message("Build type: #{build_type}")
     UI.message("Artifact type: #{artifact_type}")
+    UI.message("Version name: #{version_name}")
+    UI.message("Version code: #{version_code}")
 
     if build_type == "DEBUG"
       UI.user_error!("DEBUG only supports APK") if artifact_type == "AAB"
@@ -26,5 +43,30 @@ platform :android do
         )
       end
     end
+  end
+
+  desc "Build native Android APK and upload to Firebase"
+  lane :firebase_release do
+    ENV["BUILD_TYPE"] = "RELEASE"
+    ENV["ANDROID_ARTIFACT"] = "APK"
+
+    build_android
+
+    apk_path = "app/build/outputs/apk/release/app-release.apk"
+
+    unless File.exist?(apk_path)
+      apk_path = "app/build/outputs/apk/release/app-release-unsigned.apk"
+    end
+
+    UI.user_error!("Release APK not found") unless File.exist?(apk_path)
+
+    firebase_app_distribution(
+      app: ENV["FIREBASE_ANDROID_APP_ID"],
+      firebase_cli_token: ENV["FIREBASE_TOKEN"],
+      android_artifact_type: "APK",
+      android_artifact_path: apk_path,
+      groups: "testers",
+      release_notes: read_release_notes
+    )
   end
 end
