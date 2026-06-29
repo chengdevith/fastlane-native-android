@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "250493090820",
+    "project_id": "benz-f15fb",
+    "storage_bucket": "benz-f15fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250493090820:android:abb69649fb46b6fa9f4951",
+        "android_client_info": {
+          "package_name": "com.smartserve.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyAGKO99kmUXWN54ZJ0tZDNUu44WheY1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250493090820:android:a94a1e930bed2e9d9f4951",
+        "android_client_info": {
+          "package_name": "com.smartserve.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyAGKO99kmUXWN54ZJ0tZDNUu44WheY1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
