@@ -143,7 +143,7 @@ pipeline {
                 script {
                     if (params.DISTRIBUTION == 'FIREBASE') {
                         withCredentials([
-                            string(credentialsId: 'firebase-android-app-id', variable: 'FIREBASE_NATIVE_ANDROID_APP_ID'),
+                            string(credentialsId: 'firebase-native-android-app-id', variable: 'FIREBASE_NATIVE_ANDROID_APP_ID'),
                             string(credentialsId: 'firebase-token', variable: 'FIREBASE_TOKEN')
                         ]) {
                             sh '''
