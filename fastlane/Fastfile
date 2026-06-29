@@ -1,0 +1,30 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build native Android app: DEBUG APK, RELEASE APK, or RELEASE AAB"
+  lane :build_android do
+    build_type = (ENV["BUILD_TYPE"] || "DEBUG").upcase
+    artifact_type = (ENV["ANDROID_ARTIFACT"] || "APK").upcase
+
+    UI.message("Build type: #{build_type}")
+    UI.message("Artifact type: #{artifact_type}")
+
+    if build_type == "DEBUG"
+      UI.user_error!("DEBUG only supports APK") if artifact_type == "AAB"
+
+      gradle(
+        task: "clean assembleDebug"
+      )
+    else
+      if artifact_type == "AAB"
+        gradle(
+          task: "clean bundleRelease"
+        )
+      else
+        gradle(
+          task: "clean assembleRelease"
+        )
+      end
+    end
+  end
+end
