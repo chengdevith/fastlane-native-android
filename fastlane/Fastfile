@@ -21,6 +21,11 @@ platform :android do
 
     UI.user_error!("VERSION_CODE must be numeric") unless version_code.match?(/^\d+$/)
 
+    gradle_properties = {
+      "VERSION_NAME" => version_name,
+      "VERSION_CODE" => version_code
+    }
+
     UI.message("Build type: #{build_type}")
     UI.message("Artifact type: #{artifact_type}")
     UI.message("Version name: #{version_name}")
@@ -30,16 +35,19 @@ platform :android do
       UI.user_error!("DEBUG only supports APK") if artifact_type == "AAB"
 
       gradle(
-        task: "clean assembleDebug"
+        task: "clean assembleDebug",
+        properties: gradle_properties
       )
     else
       if artifact_type == "AAB"
         gradle(
-          task: "clean bundleRelease"
+          task: "clean bundleRelease",
+          properties: gradle_properties
         )
       else
         gradle(
-          task: "clean assembleRelease"
+          task: "clean assembleRelease",
+          properties: gradle_properties
         )
       end
     end

@@ -3,6 +3,15 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val ciVersionName = providers.gradleProperty("VERSION_NAME")
+    .orElse("1.0")
+    .get()
+
+val ciVersionCode = providers.gradleProperty("VERSION_CODE")
+    .map { it.toInt() }
+    .orElse(1)
+    .get()
+
 android {
     namespace = "com.smartserve.android"
     compileSdk {
@@ -15,8 +24,8 @@ android {
         applicationId = "com.smartserve.android"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = ciVersionCode
+        versionName = ciVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
